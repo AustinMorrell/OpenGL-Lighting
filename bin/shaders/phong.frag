@@ -1,34 +1,38 @@
 // classic Phong equation
 #version 410
-uniform vec3 kA = vec3(1,0,0);
-uniform vec3 kD = vec3(1,0,0);
-uniform vec3 kS = vec3(1,0,0);
+uniform vec3 Ka;
+uniform vec3 Kd;
+uniform vec3 Ks;
 
-uniform vec3 iA = vec3(0.25f,0.25f,0.25f);
-uniform vec3 iD = vec3(1,1,1);
-uniform vec3 iS = vec3(1,1,1);
-uniform float iSpecPower = 32.0f;
+uniform vec3 Ia;
+uniform vec3 Id;
+uniform vec3 Is;
+uniform float specularPower = 32.0f;
 
 in vec4 vNormal;
 in vec4 vPosition;
 
 out vec4 fragColor;
 
-uniform vec4 cameraPos;
-uniform vec4 LightDirection;
+uniform vec4 cameraPosition;
+uniform vec4 lightDirection;
 
 void main()
 {
-	vec3 Ambient = kA * iA;
 
-	float NdL = max( 0.0f, dot( vNormal, -LightDirection ) );
-	vec3 Diffuse = kD * iD * NdL;
+	// Ambient light
+	vec3 Ambient = Ka * Ia;
 
-	vec4 R = reflect( LightDirection, vNormal );
-	vec4 E = normalize( cameraPos - vPosition );
+	// Diffuse light
+	float NdL = dot( normalize(vNormal), -lightDirection );
+	vec3 Diffuse = Kd * Id * NdL;
 
-	float specTerm = pow( min( 0.0f, dot( R, E ) ), iSpecPower );
-	vec3 Specular = kS * iS * specTerm;
+	// Specular light
+	//vec4 R = normalize(reflect( lightDirection, vNormal ));
+	//vec4 V = normalize( cameraPosition - vPosition );
 
-	fragColor = vec4(Ambient + Diffuse + Specular, 1);
+	//float specTerm = pow( max( 0, dot( R, V ) ), specularPower );
+	//vec3 Specular = Ks * Is * specTerm;
+
+	fragColor = vec4(Ambient + Diffuse, 1);
 }
