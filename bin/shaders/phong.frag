@@ -14,25 +14,27 @@ in vec4 vPosition;
 
 out vec4 fragColor;
 
-uniform vec4 cameraPosition;
-uniform vec4 lightDirection;
+uniform vec3 cameraPosition;
+uniform vec3 lightDirection;
 
 void main()
 {
-
 	// Ambient light
 	vec3 Ambient = Ka * Ia;
 
 	// Diffuse light
-	float NdL = dot( normalize(vNormal), -lightDirection );
+	vec3 norLight = normalize(lightDirection) * 1;
+	vec4 conLight = vec4(norLight, 1);
+	float NdL = max(0, dot(conLight, vNormal));
 	vec3 Diffuse = Kd * Id * NdL;
 
 	// Specular light
-	//vec4 R = normalize(reflect( lightDirection, vNormal ));
-	//vec4 V = normalize( cameraPosition - vPosition );
+	vec3 N = normalize(vNormal.xyz);
+	vec3 La = normalize(lightDirection);
+	vec3 R = 2 * dot(N, La) * N - La;
+	vec3 V = normalize( cameraPosition - vPosition.xyz );
+	float specTerm = pow( max( 0, dot( R, V ) ), specularPower );
+	vec3 Specular = Ks * Is * specTerm;
 
-	//float specTerm = pow( max( 0, dot( R, V ) ), specularPower );
-	//vec3 Specular = Ks * Is * specTerm;
-
-	fragColor = vec4(Ambient + Diffuse, 1);
+	fragColor = vec4(Ambient + Diffuse + Specular, 1);
 }

@@ -9,6 +9,5 @@ int main() {
 	if (app->startup())
 		app->run();
 	app->shutdown();
-	system("pause");
 	return 0;
 }
